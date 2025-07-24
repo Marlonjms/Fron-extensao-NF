@@ -1,0 +1,15 @@
+{
+  "manifest_version": 3,
+  "name": "Minha Extensão React",
+  "version": "1.0",
+  "description": "Exemplo de extensão com React, Tailwind e Vite",
+  "action": {
+    "default_popup": "index.html",
+    "default_title": "Minha Extensão"
+  },
+  "icons": {
+    "16": "vite.svg",
+    "48": "vite.svg",
+    "128": "vite.svg"
+  }
+}
