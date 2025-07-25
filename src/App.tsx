@@ -3,6 +3,7 @@ import { FileText, Upload } from "lucide-react";
 
 export default function App() {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [selectedDate, setSelectDate] = useState<string>("");
 
   function handleFileChange(event: React.ChangeEvent<HTMLInputElement>) {
     const file = event.target.files?.[0];
@@ -11,7 +12,7 @@ export default function App() {
   return (
     <div className="w-[600px] h-auto flex flex-col items-center justify-center bg-fundo p-4 m-1">
       <div className="bg-white p-6 rounded shadow w-full">
-        <div className="flex flex-col gap-0 mb-6">
+        <div className="flex flex-col gap-0 mb-4">
           <div className="flex items-center gap-1.5">
             <FileText className="w-5 h-5 text-blue-500" />
             <h1 className="text-neutral-600 text-[24px] font-sans font-medium">
@@ -21,6 +22,18 @@ export default function App() {
           <p className="text-neutral-500 text-sans font-normal text-[15px]">
             Faça upload do arquivo XML da sua nota fiscal para análise.
           </p>
+        </div>
+
+        <div className="mb-4">
+          <label className="block text-sm font-medium text-neutral-700 mb-1">
+            Selecione a data
+          </label>
+          <input
+            type="date"
+            value={selectedDate}
+            onChange={(e) => setSelectDate(e.target.value)}
+            className="border border-neutral-300 rounded p-2 w-full"
+          />
         </div>
 
         <label
