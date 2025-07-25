@@ -1,39 +1,47 @@
 import { useState } from "react";
 import { FileText, Upload, TrendingUp, Clock, DollarSign } from "lucide-react";
 import Button from "./components/Button";
+import { calcular } from "./services/calcular";
 
 export default function App() {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [selectedDate, setSelectDate] = useState<string>("");
   const [showResult, setShowResult] = useState(false);
-
-  const responseFicticia = {
-    valorBruto: 550,
-    valorLiquido: 548.19,
-    taxaDiaria: 0.00066,
-    periodoDias: 5,
-  };
+  const [resultado, setResultado] = useState<{
+    valorBruto: number;
+    valorLiquido: number;
+    taxaDiaria: number;
+    periodoDias: number;
+  } | null>(null);
 
   function handleFileChange(event: React.ChangeEvent<HTMLInputElement>) {
     const file = event.target.files?.[0];
     setSelectedFile(file || null);
   }
 
-  function simulateApiCall() {
+  async function simulateApiCall() {
     if (!selectedFile || !selectedDate) {
       alert("Por favor, selecione a data e o arquivo XML.");
       return;
     }
 
-    setShowResult(true);
+    try {
+      const res = await calcular(selectedDate, selectedFile);
+      setResultado(res);
+      setShowResult(true);
+    } catch (error: any) {
+      const mensagemErro =
+        error.response?.data?.erro || error.message || "Erro inesperado.";
+      alert(`Erro: ${mensagemErro}`);
+      console.error(error);
+    }
   }
 
   return (
     <div className="w-[700px] h-auto flex flex-col items-center justify-center bg-fundo p-4 m-1">
       <div className="bg-white p-6 rounded shadow w-full">
-        {!showResult ? (
+        {!showResult || !resultado ? (
           <>
-            {/* Título e descrição */}
             <div className="flex flex-col gap-0 mb-4">
               <div className="flex items-center gap-1.5">
                 <FileText className="w-5 h-5 text-blue-500" />
@@ -46,7 +54,6 @@ export default function App() {
               </p>
             </div>
 
-            {/* Data */}
             <div className="mb-4">
               <label className="block text-sm font-medium text-neutral-700 mb-1">
                 Selecione a data
@@ -59,7 +66,6 @@ export default function App() {
               />
             </div>
 
-            {/* Upload */}
             <label
               htmlFor="xmlUpload"
               className="w-full h-auto rounded-lg border-2 border-dashed border-neutral-300 flex flex-col items-center justify-center bg-transparent cursor-pointer pb-15 pt-10"
@@ -80,24 +86,23 @@ export default function App() {
               />
             </label>
 
-            {/* Nome do arquivo */}
             {selectedFile && (
               <div className="mt-4 text-[14px] font-sans font-medium text-neutral-700 bg-blue-50 p-2">
                 <strong>Arquivo selecionado:</strong> {selectedFile.name}
               </div>
             )}
 
-            {/* Botão */}
             <Button label="Realizar Simulação" onClick={simulateApiCall} />
           </>
         ) : (
           <>
-            {/* Topo com botão de voltar e dados do arquivo */}
             <div className="w-full flex items-center justify-between mb-6">
-              {/* Botão de voltar */}
               <button
                 className="flex items-center text-sm text-neutral-600 hover:text-neutral-800 transition"
-                onClick={() => setShowResult(false)}
+                onClick={() => {
+                  setShowResult(false);
+                  setResultado(null);
+                }}
               >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -116,7 +121,6 @@ export default function App() {
                 Voltar
               </button>
 
-              {/* Informações do arquivo e data */}
               <div className="text-right text-sm text-neutral-500">
                 {selectedFile && (
                   <p className="font-medium text-neutral-700 truncate max-w-[220px]">
@@ -127,7 +131,6 @@ export default function App() {
               </div>
             </div>
 
-            {/* Título da resposta */}
             <div className="flex flex-col gap-0 mb-4">
               <div className="flex items-center gap-1.5">
                 <TrendingUp className="w-5 h-5 text-green-400" />
@@ -136,72 +139,70 @@ export default function App() {
                 </h1>
               </div>
               <p className="text-neutral-500 text-sans font-normal text-[14px]">
-                resultado do cálculo de antecipação
+                Resultado do cálculo de antecipação
               </p>
             </div>
 
-            {/* Blocos com informações */}
             <div className="grid grid-cols-4 gap-3">
-              {/* Dias antecipados */}
               <div className="flex flex-col items-center bg-blue-50 p-3 rounded">
                 <Clock className="text-blue-500 w-7 h-7 mb-1" />
-                <span className="text-neutral-500 text-sans font-normal text-[14px]">
-                  Período dias
+                <span className="text-neutral-500 text-sans text-[14px]">
+                  Dias Antecipados
                 </span>
-                <span className="text-blue-500 text-[22px] font-bold text-center">
-                  {responseFicticia.periodoDias}
+                <span className="text-blue-500 text-[22px] font-bold">
+                  {resultado.periodoDias}
                 </span>
               </div>
 
-              {/* Taxa total */}
               <div className="flex flex-col items-center bg-blue-50 p-3 rounded">
-                <DollarSign className="text-neutral-500  w-7 h-7 mb-1" />
-                <span className="text-neutral-500 text-sans font-normal text-[14px]">
-                  Taxa Diaria
+                <DollarSign className="text-neutral-500 w-7 h-7 mb-1" />
+                <span className="text-neutral-500 text-sans text-[14px]">
+                  Taxa Total
                 </span>
-                <span className="text-neutral-700 text-[22px] font-bold text-center">
-                  {(
-                    responseFicticia.taxaDiaria *
-                    responseFicticia.periodoDias *
-                    100
-                  ).toFixed(2)}
+                <span className="text-neutral-700 text-[22px] font-bold">
+                  {(resultado.taxaDiaria * resultado.periodoDias * 100).toFixed(
+                    3
+                  )}
                   %
                 </span>
               </div>
 
-              {/* Desconto */}
               <div className="flex flex-col items-center bg-red-50 p-3 rounded">
                 <DollarSign className="text-red-400 w-7 h-7 mb-1" />
-                <span className="text-neutral-500 text-sans font-normal text-[14px]">
-                  valor Bruto
+                <span className="text-neutral-500 text-sans text-[14px]">
+                  Desconto
                 </span>
-                <span className="text-red-400 text-[22px] font-bold text-center">
+                <span className="text-red-400 text-[22px] font-bold">
                   R${" "}
-                  {(
-                    responseFicticia.valorBruto - responseFicticia.valorLiquido
-                  ).toFixed(2)}
+                  {(resultado.valorBruto - resultado.valorLiquido).toFixed(2)}
                 </span>
               </div>
 
-              {/* Valor antecipado */}
               <div className="flex flex-col items-center bg-green-100 p-3 rounded">
                 <DollarSign className="text-green-500 w-7 h-7 mb-1" />
-                <span className="text-neutral-500 text-sans font-normal text-[14px]">
-                  valor Liquído
+                <span className="text-neutral-500 text-sans text-[14px]">
+                  Valor Antecipado
                 </span>
-                <span className="text-green-500 text-[22px] font-bold text-center">
-                  R$ {responseFicticia.valorLiquido.toFixed(2)}
+                <span className="text-green-500 text-[22px] font-bold">
+                  R$ {resultado.valorLiquido.toFixed(2)}
                 </span>
               </div>
             </div>
-            {/* Linha divisória */}
-            <hr className="my-6 border-t border-neutral-200" />
 
-            {/* Rodapé com texto e botão */}
+            <hr className="my-6 border-t border-neutral-200" />
+            <div className="border border-neutral-300 rounded-md px-3 py-1 text-sm text-neutral-700 inline-flex items-center gap-2">
+              <span className="text-neutral-500 text-xs">Taxa Diária:</span>
+              <span className="font-medium">
+                {(resultado.taxaDiaria * 100).toFixed(4)}%
+              </span>
+            </div>
+
             <div className="flex items-center justify-between">
               <p className="text-neutral-500 text-sm">
                 Simulação baseada em taxa mensal de{" "}
-                <span className="font-medium text-neutral-700">3.5%</span>
+                <span className="font-medium text-neutral-700">
+                  {(resultado.taxaDiaria * 30 * 100).toFixed(2)}%
+                </span>
               </p>
 
               <button
