@@ -1,15 +1,18 @@
 {
-  "manifest_version": 3,
-  "name": "Minha Extensão React",
+  "name": "Extensions",
+  "description": "Chrome Extension",
   "version": "1.0",
-  "description": "Exemplo de extensão com React, Tailwind e Vite",
+  "manifest_version": 3,
   "action": {
     "default_popup": "index.html",
-    "default_title": "Minha Extensão"
+    "default_title": "Extension"
   },
   "icons": {
     "16": "vite.svg",
     "48": "vite.svg",
     "128": "vite.svg"
+  },
+  "content_security_policy": {
+    "extension_pages": "script-src 'self'; object-src 'self';"
   }
 }

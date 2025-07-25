@@ -1,25 +1,54 @@
-import { FileText } from "lucide-react";
+import { useState } from "react";
+import { FileText, Upload } from "lucide-react";
 
 export default function App() {
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+
+  function handleFileChange(event: React.ChangeEvent<HTMLInputElement>) {
+    const file = event.target.files?.[0];
+    setSelectedFile(file || null);
+  }
   return (
-    <div className="w-[400px] h-[600px] flex items-center justify-center flex items-center justify-center bg-fundo px-4">
-      <div className="bg-white w-full max-w-md p-6 rounded shadow">
-        <div className="flex items-center gap-2 mb-4">
-          <FileText className="w-6 h-6 text-blue-500" />
-          <h1 className="text-green-900 text-xl font-bold">
-            Upload da nota fiscal
-          </h1>
-        </div>
-
-        <p className="text-green-600 text-base mb-6">
-          Faça upload do arquivo XML da sua nota fiscal para análise.
-        </p>
-
-        <div className="p-8 w-full bg-white rounded-lg shadow-lg border border-dashed border-green-600">
-          <div className="flex items-center gap-3">
-            {/* Aqui entra o botão ou dropzone */}
+    <div className="w-[600px] h-auto flex flex-col items-center justify-center bg-fundo p-4 m-1">
+      <div className="bg-white p-6 rounded shadow w-full">
+        <div className="flex flex-col gap-0 mb-6">
+          <div className="flex items-center gap-1.5">
+            <FileText className="w-5 h-5 text-blue-500" />
+            <h1 className="text-neutral-600 text-[24px] font-sans font-medium">
+              Upload da Nota Fiscal
+            </h1>
           </div>
+          <p className="text-neutral-500 text-sans font-normal text-[15px]">
+            Faça upload do arquivo XML da sua nota fiscal para análise.
+          </p>
         </div>
+
+        <label
+          htmlFor="xmlUpload"
+          className=" w-full h-auto rounded-lg border-2 border-dashed border-neutral-300 flex flex-col items-center justify-center bg-transparent cursor-pointer pb-15 pt-10 "
+        >
+          <Upload className="w-11 h-11 text-neutral-500 mb-1" />
+          <span className="text-neutral-800 text-[15px] font-sans font-medium">
+            Arraste seu arquivo XML aqui
+          </span>
+          <span className="text-neutral-500 text-sans font-normal text-[12px]">
+            ou clique para selecionar
+          </span>
+          <input
+            id="xmlUpload"
+            type="file"
+            accept=".xml"
+            className="hidden"
+            onChange={handleFileChange}
+          />
+        </label>
+
+        {selectedFile && (
+          <div className="mt-4 text-[14px] font-sans font-medium text-neutral-700   bg-blue-50 p-2 ">
+            <strong className=" ">Arquivo selecionado:</strong>{" "}
+            {selectedFile.name}
+          </div>
+        )}
       </div>
     </div>
   );
