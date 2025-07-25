@@ -6,12 +6,6 @@ import react from "@vitejs/plugin-react";
 export default defineConfig({
   plugins: [react(), tailwindcss()],
   server: {
-    proxy: {
-      "/calcular": {
-        target: "https://antecipacao-recebiveis.onrender.com",
-        changeOrigin: true,
-        secure: false,
-      },
-    },
+    port: 5173, // opcional
   },
 });
