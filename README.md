@@ -2,7 +2,7 @@ comando para rodar na extensão : npm rum build
 comando para rodar no localhost: npm rum dev
 
 
-no front-end é necessario colocar a url da api publica:
+no front-end, no arquivo .env é necessario colocar a url da api publica:
 
 <img width="530" height="122" alt="image" src="https://github.com/user-attachments/assets/a2aa8968-b06c-45bc-8db7-c057b0f65f32" />
 
