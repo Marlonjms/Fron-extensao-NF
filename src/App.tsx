@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { FileText, Upload } from "lucide-react";
+import Button from "./components/Button";
 
 export default function App() {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
@@ -62,6 +63,7 @@ export default function App() {
             {selectedFile.name}
           </div>
         )}
+        <Button label="Analisar Nota" onClick={() => alert("Ação futura...")} />
       </div>
     </div>
   );
